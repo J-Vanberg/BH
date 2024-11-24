@@ -155,10 +155,9 @@ void Automap::OnAutomapDraw() {
 				// Draw monster on automap
 				if (unit->dwType == UNIT_MONSTER && IsValidMonster(unit)) {
 					int color = -1;
-					if (unit->pMonsterData->fNormal && App.automap.showNormalMonsters.toggle.isEnabled) {
-						color = monsterColors["Normal"];
-					}
-					else if (unit->pMonsterData->fChamp && App.automap.showStrongMonsters.toggle.isEnabled) {
+					int size = 3;
+					
+					if (unit->pMonsterData->fChamp && App.automap.showStrongMonsters.toggle.isEnabled) {
 						color = monsterColors["Champion"];
 					}
 					else if (unit->pMonsterData->fMinion && App.automap.showStrongMonsters.toggle.isEnabled) {
@@ -166,6 +165,10 @@ void Automap::OnAutomapDraw() {
 					}
 					else if (unit->pMonsterData->fBoss && App.automap.showUniqueMonsters.toggle.isEnabled) {
 						color = monsterColors["Boss"];
+					}
+					else if (App.automap.showNormalMonsters.toggle.isEnabled) {
+						color = monsterColors["Normal"];
+						size = 2;
 					}
 					else {
 						// Not a monster we want to show
@@ -182,10 +185,21 @@ void Automap::OnAutomapDraw() {
 
 					xPos = unit->pPath->xPos;
 					yPos = unit->pPath->yPos;
-					automapBuffer.push([color, xPos, yPos]()->void{
+					automapBuffer.push([color, size, xPos, yPos]()->void {
 						POINT automapLoc;
 						Drawing::Hook::ScreenToAutomap(&automapLoc, xPos, yPos);
-						Drawing::Crosshook::Draw(automapLoc.x, automapLoc.y, color);
+
+						// Top left - Bottom right
+						Drawing::Linehook::Draw(
+							automapLoc.x - size, automapLoc.y - size,
+							automapLoc.x + size, automapLoc.y + size,
+							color);
+
+						// Top right - Bottom left
+						Drawing::Linehook::Draw(
+							automapLoc.x + size, automapLoc.y - size,
+							automapLoc.x - size, automapLoc.y + size,
+							color);
 					});
 				}
 
@@ -195,7 +209,7 @@ void Automap::OnAutomapDraw() {
 					if (IsObjectNormalChest(unit->pObjectData->pTxt) && App.automap.showNormalChests.toggle.isEnabled) {
 						color = chestColors["Normal"];
 					}
-					else if (IsObjectNormalChest(unit->pObjectData->pTxt) && App.automap.showNormalChests.toggle.isEnabled) {
+					else if (IsObjectSpecialChest(unit->pObjectData->pTxt) && App.automap.showSpecialChests.toggle.isEnabled) {
 						color = chestColors["Special"];
 					}
 					else {
