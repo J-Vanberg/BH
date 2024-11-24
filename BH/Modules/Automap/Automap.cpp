@@ -34,10 +34,9 @@ bool IsObjectNormalChest(ObjectTxt* obj)
 
 bool IsObjectSpecialChest(ObjectTxt* obj)
 {
-	return (obj->nSelectable0 && (
+	return (obj->nSelectable0 && obj->nAutoMap != 318 && (
 		(obj->nOperateFn == 33) ||	//wirt
-		(obj->nOperateFn == 68) ||	//evil urn
-		(obj->nAutoMap == 318)		// shiny chests
+		(obj->nOperateFn == 68)		//evil urn
 		));
 }
 
@@ -49,7 +48,7 @@ Automap::Automap() : Module("Automap") {
 	monsterColors["Champion"] = 0x91;
 	monsterColors["Boss"] = 0x84;
 
-	chestColors["Normal"] = 0x5B;
+	chestColors["Normal"] = 0x09;
 	chestColors["Special"] = 0x84;
 
 	lkLinesColor = 105;
@@ -66,37 +65,6 @@ void Automap::LoadConfig() {
 
 void Automap::OnLoad() {
 	ReadConfig();
-	/*
-	settingsTab = new UITab("Automap", BH::settingsUI);
-
-	new Texthook(settingsTab, 80, 3, "Toggles");
-	unsigned int Y = 0;
-	int keyhook_x = 150;
-	int col2_x = 250;
-
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.revealMap.toggle.isEnabled, "Reveal Map");
-
-	vector<string> options;
-	options.push_back("Game");
-	options.push_back("Act");
-	options.push_back("Level");
-	new Texthook(settingsTab, 4, (Y += 15), "Reveal Type:");
-	new Combohook(settingsTab, keyhook_x, (Y + 2), 2, &App.automap.revealType.uValue, options);
-
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.showNormalMonsters.toggle.isEnabled, "Show Normal Monsters");
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.showNormalMonsters.toggle.isEnabled, "Show Strong Monsters");
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.showNormalMonsters.toggle.isEnabled, "Show Unique Monsters");
-
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.showNormalChests.toggle.isEnabled, "Show Normal Chests");
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.showSpecialChests.toggle.isEnabled, "Show Special Chests");
-	new Checkhook(settingsTab, 4, (Y += 15), &App.automap.showAutomapOnJoin.toggle.isEnabled, "Show Automap On Join");
-
-	new Texthook(settingsTab, col2_x + 5, 107, "Monster Colors");
-	new Colorhook(settingsTab, col2_x, 137, &monsterColors["Normal"], "Normal");
-	new Colorhook(settingsTab, col2_x, 152, &monsterColors["Minion"], "Minion");
-	new Colorhook(settingsTab, col2_x, 167, &monsterColors["Champion"], "Champion");
-	new Colorhook(settingsTab, col2_x, 182, &monsterColors["Boss"], "Boss");
-	*/
 }
 
 void Automap::OnKey(bool up, BYTE key, LPARAM lParam, bool* block) {
@@ -148,6 +116,7 @@ void Automap::OnAutomapDraw() {
 		Drawing::Hook::ScreenToAutomap(&MyPos,
 			D2CLIENT_GetUnitX(D2CLIENT_GetPlayerUnit()),
 			D2CLIENT_GetUnitY(D2CLIENT_GetPlayerUnit()));
+
 		for (Room1* room1 = player->pAct->pRoom1; room1; room1 = room1->pRoomNext) {
 			for (UnitAny* unit = room1->pUnitFirst; unit; unit = unit->pListNext) {
 				DWORD xPos, yPos;
@@ -221,28 +190,9 @@ void Automap::OnAutomapDraw() {
 					automapBuffer.push([color, xPos, yPos]()->void{
 						POINT automapLoc;
 						Drawing::Hook::ScreenToAutomap(&automapLoc, xPos, yPos);
-						Drawing::Boxhook::Draw(automapLoc.x - 1, automapLoc.y - 1, 2, 2, color, Drawing::BTHighlight);
+						Drawing::Boxhook::Draw(automapLoc.x - 2, automapLoc.y - 1, 4, 2, color, Drawing::BTHighlight);
 					});
 				}				
-			}
-		}
-
-		// No idea what this is
-		if (lkLinesColor > 0 && player->pPath->pRoom1->pRoom2->pLevel->dwLevelNo == MAP_A3_LOWER_KURAST) {
-			for(Room2 *pRoom =  player->pPath->pRoom1->pRoom2->pLevel->pRoom2First; pRoom; pRoom = pRoom->pRoom2Next) {
-				for (PresetUnit* preset = pRoom->pPreset; preset; preset = preset->pPresetNext) {
-					DWORD xPos, yPos;
-					int lkLineColor = lkLinesColor;
-					if (preset->dwTxtFileNo == 160) {
-						xPos = (preset->dwPosX) + (pRoom->dwPosX * 5);
-						yPos = (preset->dwPosY) + (pRoom->dwPosY * 5);
-						automapBuffer.push([xPos, yPos, MyPos, lkLineColor]()->void{
-							POINT automapLoc;
-							Drawing::Hook::ScreenToAutomap(&automapLoc, xPos, yPos);
-							Drawing::Linehook::Draw(MyPos.x, MyPos.y, automapLoc.x, automapLoc.y, lkLineColor);
-						});
-					}
-				}
 			}
 		}
 	});
