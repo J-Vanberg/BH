@@ -99,6 +99,9 @@
     <ClCompile Include="Modules\GameSettings\GameSettings.cpp">
       <Filter>Modules\GameSettings</Filter>
     </ClCompile>
+    <ClCompile Include="Modules\Automap\Automap.cpp">
+      <Filter>Modules\Automap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AsyncDrawBuffer.h" />
@@ -207,6 +210,9 @@
     <ClInclude Include="Modules\GameSettings\GameSettings.h">
       <Filter>Modules\GameSettings</Filter>
     </ClInclude>
+    <ClInclude Include="Modules\Automap\Automap.h">
+      <Filter>Modules\Automap</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Modules">
@@ -286,6 +292,9 @@
     </Filter>
     <Filter Include="Modules\GameSettings">
       <UniqueIdentifier>{804cabda-3e31-4dee-bcf5-07cd55094c08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules\Automap">
+      <UniqueIdentifier>{d7d87404-c2b0-4011-84dc-0110ae4aa763}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -11,5 +11,6 @@
 #include "Modules\ItemMover\ItemMover.h"
 #include "Modules\Party\Party.h"
 #include "Modules\StashExport\StashExport.h"
+#include "Modules\Automap\Automap.h"
 #include "Modules\ChatColor\ChatColor.h"
 #include "Modules/GameSettings/GameSettings.h"

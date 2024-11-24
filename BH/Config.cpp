@@ -237,6 +237,18 @@ void Config::SaveConfig()
 	jsonStash["mustache_format"] = App.stash.mustacheFormat.values;
 	App.jsonConfig["stash_export"] = jsonStash;
 
+	// Automap
+	json jsonAutomap;
+	jsonAutomap["reveal_map"] = App.automap.revealMap.toggle.isEnabled;
+	jsonAutomap["reveal_type"] = App.automap.revealType.value;
+	jsonAutomap["show_normal_monsters"] = App.automap.showNormalMonsters.toggle.isEnabled;
+	jsonAutomap["show_strong_monsters"] = App.automap.showStrongMonsters.toggle.isEnabled;
+	jsonAutomap["show_unique_monsters"] = App.automap.showUniqueMonsters.toggle.isEnabled;
+	jsonAutomap["show_normal_chests"] = App.automap.showNormalChests.toggle.isEnabled;
+	jsonAutomap["show_special_chests"] = App.automap.showSpecialChests.toggle.isEnabled;
+	jsonAutomap["show_automap_on_join"] = App.automap.showAutomapOnJoin.toggle.isEnabled;
+	App.jsonConfig["automap"] = jsonAutomap;
+
 	// BH UI window
 	json jsonBHUI;
 	jsonBHUI["is_minimized"] = App.bhui.isMinimized.value;
@@ -375,6 +387,16 @@ void Config::LoadConfig()
 	App.stash.mustacheDefault.value =	GetString("/stash_export"_json_pointer, "mustache_default", App.stash.mustacheDefault);
 	App.stash.mustacheOptions.values =	GetArray("/stash_export"_json_pointer, "mustache_options", App.stash.mustacheOptions);
 	App.stash.mustacheFormat.values =	GetAssoc("/stash_export"_json_pointer, "mustache_format", App.stash.mustacheFormat);
+
+	// Automap
+	App.automap.revealMap.toggle =			GetToggle("/automap"_json_pointer, "reveal_map", App.automap.revealMap);
+	App.automap.revealType.value = (unsigned int)GetInt("/automap"_json_pointer, "reveal_type", App.automap.revealType);
+	App.automap.showNormalMonsters.toggle = GetToggle("/automap"_json_pointer, "show_normal_monsters", App.automap.showNormalMonsters);
+	App.automap.showStrongMonsters.toggle = GetToggle("/automap"_json_pointer, "show_strong_monsters", App.automap.showStrongMonsters);
+	App.automap.showUniqueMonsters.toggle = GetToggle("/automap"_json_pointer, "show_unique_monsters", App.automap.showUniqueMonsters);
+	App.automap.showNormalChests.toggle =	GetToggle("/automap"_json_pointer, "show_normal_chests", App.automap.showNormalChests);
+	App.automap.showSpecialChests.toggle =	GetToggle("/automap"_json_pointer, "show_special_chests", App.automap.showSpecialChests);
+	App.automap.showAutomapOnJoin.toggle =	GetToggle("/automap"_json_pointer, "show_automap_on_join", App.automap.showAutomapOnJoin);
 
 	App.bhui.isMinimized.value =		GetBool("/bh_ui"_json_pointer, "is_minimized", App.bhui.isMinimized);
 	App.bhui.openedX.value =			GetInt("/bh_ui"_json_pointer, "opened_x", App.bhui.openedX);

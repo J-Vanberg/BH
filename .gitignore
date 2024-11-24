@@ -32,6 +32,7 @@
 *~
 *.swp
 Debug/
+build/
 Packaging/*
 BH/Release/*
 Release/*

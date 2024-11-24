@@ -158,8 +158,18 @@ struct BHApp {
 		};
 	} stash;
 
-	struct
-	{
+	struct {
+		SettingsToggle revealMap = { {}, {0, true} };
+		SettingsInt revealType = { 0, 1, 0, 2 }; // 0: Game, 1: Act, 2: Level
+		SettingsToggle showNormalMonsters = { {}, {0, false} };
+		SettingsToggle showStrongMonsters = { {}, {0, true} };
+		SettingsToggle showUniqueMonsters = { {}, {0, true} };
+		SettingsToggle showNormalChests = { {}, {0, false} };
+		SettingsToggle showSpecialChests = { {}, {0, true} };
+		SettingsToggle showAutomapOnJoin = { {}, {0, false} };
+	} automap;
+
+	struct {
 		SettingsBool usingD2GL = { false, false };
 		SettingsBool usingHDText = { false, false };
 	} d2gl;

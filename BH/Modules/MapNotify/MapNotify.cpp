@@ -48,8 +48,6 @@ void MapNotify::OnUnload() {
 void MapNotify::OnLoop() {
 }
 
-Act* lastAct = NULL;
-
 void MapNotify::OnDraw() {
 	UnitAny* player = D2CLIENT_GetPlayerUnit();
 
@@ -171,7 +169,7 @@ void MapNotify::OnAutomapDraw() {
 void MapNotify::OnGameJoin() {
 }
 
-void Squelch(DWORD Id, BYTE button) {
+void MapNotify::Squelch(DWORD Id, BYTE button) {
 	LPBYTE aPacket = new BYTE[7];	//create packet
 	*(BYTE*)&aPacket[0] = 0x5d;
 	*(BYTE*)&aPacket[1] = button;

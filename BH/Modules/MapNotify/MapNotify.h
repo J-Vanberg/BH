@@ -3,7 +3,9 @@
 #include "../Module.h"
 #include "../../Config.h"
 #include "../../Drawing.h"
+#include "../../AsyncDrawBuffer.h"
 
+/* Not used by module
 struct LevelList {
 	unsigned int levelId;
 	unsigned int x, y, act;
@@ -13,6 +15,7 @@ struct BaseSkill {
 	WORD Skill;
 	BYTE Level;
 };
+*/
 
 class MapNotify : public Module {
 private:
@@ -22,6 +25,9 @@ private:
 	unsigned int maxGhostSelection;
 	std::map<string, unsigned int> TextColorMap;
 	Drawing::UITab* settingsTab;
+	Act* lastAct = NULL;
+
+	void Squelch(DWORD Id, BYTE button);
 
 public:
 	MapNotify();
