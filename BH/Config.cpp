@@ -239,14 +239,21 @@ void Config::SaveConfig()
 
 	// Automap
 	json jsonAutomap;
-	jsonAutomap["reveal_map"] = App.automap.revealMap.toggle.isEnabled;
+	jsonAutomap["reveal_map"]["enabled"] = App.automap.revealMap.toggle.isEnabled;
+	jsonAutomap["reveal_map"]["hotkey"] = GetKeyCode(App.automap.revealMap.toggle.hotkey).name;
 	jsonAutomap["reveal_type"] = App.automap.revealType.value;
-	jsonAutomap["show_normal_monsters"] = App.automap.showNormalMonsters.toggle.isEnabled;
-	jsonAutomap["show_strong_monsters"] = App.automap.showStrongMonsters.toggle.isEnabled;
-	jsonAutomap["show_unique_monsters"] = App.automap.showUniqueMonsters.toggle.isEnabled;
-	jsonAutomap["show_normal_chests"] = App.automap.showNormalChests.toggle.isEnabled;
-	jsonAutomap["show_special_chests"] = App.automap.showSpecialChests.toggle.isEnabled;
-	jsonAutomap["show_automap_on_join"] = App.automap.showAutomapOnJoin.toggle.isEnabled;
+	jsonAutomap["show_normal_monsters"]["enabled"] = App.automap.showNormalMonsters.toggle.isEnabled;
+	jsonAutomap["show_normal_monsters"]["hotkey"] = GetKeyCode(App.automap.showNormalMonsters.toggle.hotkey).name;
+	jsonAutomap["show_strong_monsters"]["enabled"] = App.automap.showStrongMonsters.toggle.isEnabled;
+	jsonAutomap["show_strong_monsters"]["hotkey"] = GetKeyCode(App.automap.showStrongMonsters.toggle.hotkey).name;
+	jsonAutomap["show_unique_monsters"]["enabled"] = App.automap.showUniqueMonsters.toggle.isEnabled;
+	jsonAutomap["show_unique_monsters"]["hotkey"] = GetKeyCode(App.automap.showUniqueMonsters.toggle.hotkey).name;
+	jsonAutomap["show_normal_chests"]["enabled"] = App.automap.showNormalChests.toggle.isEnabled;
+	jsonAutomap["show_normal_chests"]["hotkey"] = GetKeyCode(App.automap.showNormalChests.toggle.hotkey).name;
+	jsonAutomap["show_special_chests"]["enabled"] = App.automap.showSpecialChests.toggle.isEnabled;
+	jsonAutomap["show_special_chests"]["hotkey"] = GetKeyCode(App.automap.showSpecialChests.toggle.hotkey).name;
+	jsonAutomap["show_automap_on_join"]["enabled"] = App.automap.showAutomapOnJoin.toggle.isEnabled;
+	jsonAutomap["show_automap_on_join"]["hotkey"] = GetKeyCode(App.automap.showAutomapOnJoin.toggle.hotkey).name;
 	App.jsonConfig["automap"] = jsonAutomap;
 
 	// BH UI window
@@ -417,6 +424,7 @@ void Config::LoadConfig()
 
 		// Lootfilter
 		&App.lootfilter.allowUnknownItems.toggle,
+
 		// Legacy Lootfilter
 		&App.legacy.showEthereal.toggle,
 		&App.legacy.showSockets.toggle,
@@ -427,14 +435,25 @@ void Config::LoadConfig()
 		&App.legacy.verboseNotifications.toggle,
 		&App.legacy.dropNotifications.toggle,
 		&App.legacy.closeNotifications.toggle,
+
 		// Game
 
 		// Party
 		&App.party.autoParty.toggle,
 		&App.party.autoCorpseLoot.toggle,
+
 		// Stash
 		&App.stash.includeEquipment.toggle,
-		&App.stash.exportOnMenu.toggle
+		&App.stash.exportOnMenu.toggle,
+
+		// Automap
+		&App.automap.revealMap.toggle,
+		&App.automap.showNormalMonsters.toggle,
+		&App.automap.showStrongMonsters.toggle,
+		&App.automap.showUniqueMonsters.toggle,
+		&App.automap.showNormalChests.toggle,
+		&App.automap.showSpecialChests.toggle,
+		&App.automap.showAutomapOnJoin.toggle
 	};
 }
 

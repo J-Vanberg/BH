@@ -100,6 +100,7 @@ void BH::Initialize()
 	new ItemMover();
 	new StashExport();
 	new MapNotify();
+	new Automap();
 	new ChatColor();
 
 	moduleManager->LoadModules();

@@ -36,23 +36,27 @@ class Automap : public Module {
 		void Squelch(DWORD Id, BYTE button);
 
 	public:
-	Automap();
+		Automap();
 
-	void OnLoad();
-	void OnLoop();
-	void OnAutomapDraw();
-	void OnGameJoin();
-	void OnGamePacketRecv(BYTE* packet, bool *block);
+		void ReadConfig();
+		void OnLoad();
+		void OnUnload();
 
-	void ResetRevealed();
+		void LoadConfig();
 
-	void OnKey(bool up, BYTE key, LPARAM lParam, bool* block);
+		void OnLoop();
+		void OnAutomapDraw();
+		void OnGameJoin();
+		void OnGamePacketRecv(BYTE* packet, bool *block);
 
-	void RevealGame();
-	void RevealAct(int act);
-	void RevealLevel(Level* level);
-	void RevealRoom(Room2* room);
+		void OnKey(bool up, BYTE key, LPARAM lParam, bool* block);
 
-	static Level* GetLevel(Act* pAct, int level);
-	static AutomapLayer* InitLayer(int level);
+		void ResetRevealed();
+		void RevealGame();
+		void RevealAct(int act);
+		void RevealLevel(Level* level);
+		void RevealRoom(Room2* room);
+
+		static Level* GetLevel(Act* pAct, int level);
+		static AutomapLayer* InitLayer(int level);
 };

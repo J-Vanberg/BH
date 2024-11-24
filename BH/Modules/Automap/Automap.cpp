@@ -8,7 +8,7 @@
 #include "../Item/ItemDisplay.h"
 #include "../../AsyncDrawBuffer.h"
 #include "../Item/Item.h"
-#include "../ScreenInfo/ScreenInfo.h"
+#include "../../Modules/GameSettings/GameSettings.h"
 
 #pragma optimize( "", off)
 
@@ -16,8 +16,34 @@ using namespace Drawing;
 
 DrawDirective drawer(true, 5);
 
+bool IsObjectNormalChest(ObjectTxt* obj)
+{
+	return (obj->nSelectable0 && obj->nAutoMap != 318 && (
+		(obj->nOperateFn == 1) ||	//bed, undef grave, casket, sarc
+		(obj->nOperateFn == 3) ||	//basket, urn, rockpile, trapped soul
+		(obj->nOperateFn == 4) ||	//chest, corpse, wooden chest, buriel chest, skull and rocks, dead barb
+		(obj->nOperateFn == 5) ||	//barrel
+		(obj->nOperateFn == 7) ||	//exploding barrel
+		(obj->nOperateFn == 14) ||	//loose bolder etc....*
+		(obj->nOperateFn == 19) ||	//armor stand
+		(obj->nOperateFn == 20) ||	//weapon rack
+		(obj->nOperateFn == 48) ||	//trapped soul
+		(obj->nOperateFn == 51)		//stash
+		));
+}
+
+bool IsObjectSpecialChest(ObjectTxt* obj)
+{
+	return (obj->nSelectable0 && (
+		(obj->nOperateFn == 33) ||	//wirt
+		(obj->nOperateFn == 68) ||	//evil urn
+		(obj->nAutoMap == 318)		// shiny chests
+		));
+}
+
 Automap::Automap() : Module("Automap") {
-	ResetRevealed();
+	ReadConfig();
+
 	monsterColors["Normal"] = 0x5B;
 	monsterColors["Minion"] = 0x60;
 	monsterColors["Champion"] = 0x91;
@@ -27,17 +53,20 @@ Automap::Automap() : Module("Automap") {
 	chestColors["Special"] = 0x84;
 
 	lkLinesColor = 105;
+
+	ResetRevealed();
 }
 
-void Automap::ResetRevealed() {
-	revealedGame = false;
-	for (int act = 0; act < 6; act++)
-		revealedAct[act] = false;
-	for (int level = 0; level < 255; level++)
-		revealedLevel[level] = false;
+void Automap::ReadConfig() {
+}
+
+void Automap::LoadConfig() {
+	ReadConfig();
 }
 
 void Automap::OnLoad() {
+	ReadConfig();
+	/*
 	settingsTab = new UITab("Automap", BH::settingsUI);
 
 	new Texthook(settingsTab, 80, 3, "Toggles");
@@ -67,6 +96,7 @@ void Automap::OnLoad() {
 	new Colorhook(settingsTab, col2_x, 152, &monsterColors["Minion"], "Minion");
 	new Colorhook(settingsTab, col2_x, 167, &monsterColors["Champion"], "Champion");
 	new Colorhook(settingsTab, col2_x, 182, &monsterColors["Boss"], "Boss");
+	*/
 }
 
 void Automap::OnKey(bool up, BYTE key, LPARAM lParam, bool* block) {
@@ -77,6 +107,9 @@ void Automap::OnKey(bool up, BYTE key, LPARAM lParam, bool* block) {
 			BH::ReloadConfig();
 		return;
 	}
+}
+
+void Automap::OnUnload() {
 }
 
 void Automap::OnLoop() {
@@ -99,31 +132,6 @@ void Automap::OnLoop() {
 	}
 }
 
-bool IsObjectNormalChest(ObjectTxt* obj)
-{
-	return (obj->nSelectable0 && obj->nAutoMap != 318 && (
-			(obj->nOperateFn == 1) ||	//bed, undef grave, casket, sarc
-			(obj->nOperateFn == 3) ||	//basket, urn, rockpile, trapped soul
-			(obj->nOperateFn == 4) ||	//chest, corpse, wooden chest, buriel chest, skull and rocks, dead barb
-			(obj->nOperateFn == 5) ||	//barrel
-			(obj->nOperateFn == 7) ||	//exploding barrel
-			(obj->nOperateFn == 14) ||	//loose bolder etc....*
-			(obj->nOperateFn == 19) ||	//armor stand
-			(obj->nOperateFn == 20) ||	//weapon rack
-			(obj->nOperateFn == 48) ||	//trapped soul
-			(obj->nOperateFn == 51)		//stash
-		));
-}
-
-bool IsObjectSpecialChest(ObjectTxt *obj)
-{
-	return (obj->nSelectable0 && (
-			(obj->nOperateFn == 33) ||	//wirt
-			(obj->nOperateFn == 68) ||	//evil urn
-			(obj->nAutoMap == 318)		// shiny chests
-		));
-}
-
 void Automap::OnAutomapDraw() {
 	UnitAny* player = D2CLIENT_GetPlayerUnit();
 	
@@ -133,10 +141,6 @@ void Automap::OnAutomapDraw() {
 	if (lastAct != player->pAct){
 		lastAct = player->pAct;
 		drawer.forceUpdate();
-	}
-
-	if (!IsInitialized()){
-		Drawing::Texthook::Draw(10, 70, Drawing::None, 12, Gold, "Loading MPQ Data...");
 	}
 	
 	drawer.draw([=](AsyncDrawBuffer &automapBuffer) -> void {
@@ -250,95 +254,14 @@ void Automap::Squelch(DWORD Id, BYTE button) {
 }
 
 void Automap::OnGamePacketRecv(BYTE *packet, bool *block) {
-	switch (packet[0]) {
+}
 
-	case 0x9c: {
-		INT64 icode   = 0;
-        char code[5]  = "";
-        BYTE mode     = packet[1];
-        DWORD gid     = *(DWORD*)&packet[4];
-        BYTE dest     = ((packet[13] & 0x1C) >> 2);
-
-        switch(dest)
-        {
-                case 0: 
-                case 2:
-                        icode = *(INT64 *)(packet+15)>>0x04;
-                        break;
-                case 3:
-                case 4:
-                case 6:
-                        if(!((mode == 0 || mode == 2) && dest == 3))
-                        {
-                                if(mode != 0xF && mode != 1 && mode != 12)
-                                        icode = *(INT64 *)(packet+17) >> 0x1C;
-                                else
-                                        icode = *(INT64 *)(packet+15) >> 0x04;
-                        } 
-                        else  
-                                icode = *(INT64 *)(packet+17) >> 0x05;
-                        break;
-                default:
-                        break;
-        }
-
-        memcpy(code, &icode, 4);
-        if(code[3] == ' ') code[3] = '\0';
-
-        //PrintText(1, "%s", code);
-
-		//if(mode == 0x0 || mode == 0x2 || mode == 0x3) {
-		//	BYTE ear = packet[10] & 0x01;
-		//	if(ear) *block = true;
-		//}
-		break;
-		}
-
-	case 0xa8:
-	case 0xa7: {
-			//if(packet[1] == 0x0) {
-			//	if(packet[6+(packet[0]-0xa7)] == 100) {
-			//		UnitAny* pUnit = D2CLIENT_FindServerSideUnit(*(DWORD*)&packet[2], 0);
-			//		if(pUnit)
-			//			PrintText(1, "Alert: \377c4Player \377c2%s \377c4drank a \377c1Health \377c4potion!", pUnit->pPlayerData->szName);
-			//	} else if (packet[6+(packet[0]-0xa7)] == 105) {
-			//		UnitAny* pUnit = D2CLIENT_FindServerSideUnit(*(DWORD*)&packet[2], 0);
-			//		if(pUnit)
-			//			if(pUnit->dwTxtFileNo == 1)
-			//				if(D2COMMON_GetUnitState(pUnit, 30))
-			//					PrintText(1, "Alert: \377c4ES Sorc \377c2%s \377c4drank a \377c3Mana \377c4Potion!", pUnit->pPlayerData->szName);
-			//	} else if (packet[6+(packet[0]-0xa7)] == 102) {//remove portal delay
-			//		*block = true;
-			//	}
-			//}
-			break;			   
-		}
-	case 0x94: {
-			BYTE Count = packet[1];
-			DWORD Id = *(DWORD*)&packet[2];
-			for(DWORD i = 0;i < Count;i++) {
-				BaseSkill S;
-				S.Skill = *(WORD*)&packet[6+(3*i)];
-				S.Level = *(BYTE*)&packet[8+(3*i)];
-				Skills[Id].push_back(S);
-			}
-			//for(vector<BaseSkill>::iterator it = Skills[Id].begin();  it != Skills[Id].end(); it++)
-			//	PrintText(1, "Skill %d, Level %d", it->Skill, it->Level);
-			break;
-		}
-	case 0x5b: {	//36   Player In Game      5b [WORD Packet Length] [DWORD Player Id] [BYTE Char Type] [NULLSTRING[16] Char Name] [WORD Char Lvl] [WORD Party Id] 00 00 00 00 00 00 00 00
-			WORD lvl = *(WORD*)&packet[24];
-			DWORD Id = *(DWORD*)&packet[3];
-			char* name = (char*)&packet[8];
-			UnitAny* Me = D2CLIENT_GetPlayerUnit();
-			if(!Me)
-				return;
-			else if (!strcmp(name, Me->pPlayerData->szName))
-				return;
-			//if(lvl < 9)
-			//	Squelch(Id, 3);
-		}			//2 = mute, 3 = squelch, 4 = hostile
-	}
+void Automap::ResetRevealed() {
+	revealedGame = false;
+	for (int act = 0; act < 6; act++)
+		revealedAct[act] = false;
+	for (int level = 0; level < 255; level++)
+		revealedLevel[level] = false;
 }
 
 void Automap::RevealGame() {
@@ -535,6 +458,5 @@ Level* Automap::GetLevel(Act* pAct, int level)
 	//Default old-way of finding level.
 	return D2COMMON_GetLevel(pAct->pMisc, level);
 }
-
 
 #pragma optimize( "", on)
