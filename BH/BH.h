@@ -160,7 +160,7 @@ struct BHApp {
 
 	struct {
 		SettingsToggle revealMap = { {}, {0, true} };
-		SettingsInt revealType = { 0, 1, 0, 2 }; // 0: Game, 1: Act, 2: Level
+		SettingsInt revealType = { 0, 2, 0, 2 }; // 0: Game, 1: Act, 2: Level
 		SettingsToggle showNormalMonsters = { {}, {0, false} };
 		SettingsToggle showStrongMonsters = { {}, {0, true} };
 		SettingsToggle showUniqueMonsters = { {}, {0, true} };
